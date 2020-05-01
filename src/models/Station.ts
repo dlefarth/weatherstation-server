@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface Station extends Document {
+export interface IStation extends Document {
+    validPassword(password: string): boolean;
     name: string;
     position: [number];
 }
@@ -10,4 +11,6 @@ const StationSchema: Schema = new Schema({
     position: { type: [Number], required: true }
 });
 
-export default mongoose.model<Station>('Station', StationSchema);
+StationSchema.methods.validPassword = (password: string): boolean => {return password.length > 0};
+
+export default mongoose.model<IStation>('Station', StationSchema);

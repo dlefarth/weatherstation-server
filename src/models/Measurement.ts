@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface Measurement extends Document {
+export interface IMeasurement extends Document {
     station: Schema.Types.ObjectId;
     timestamp: Date,
     temperature: number,
@@ -14,4 +14,4 @@ const measurementSchema: Schema = new Schema({
     humidity: { type: Number }
 });
 
-export default mongoose.model<Measurement>('Measurement', measurementSchema);
+export default mongoose.model<IMeasurement>('Measurement', measurementSchema);
