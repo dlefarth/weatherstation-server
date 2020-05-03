@@ -3,40 +3,28 @@ import jwt from 'express-jwt';
 
 export const jwtSecret = process.env.NODE_ENV === 'production' ? process.env.SECRET : 'secret';
 
-function getTokenFromHeader(req: Request): string | null {
-	const headerAuth: string | string[] = req.headers.authorization;
-
-	if (headerAuth !== undefined  &&  headerAuth !== null) {
-		if (Array.isArray(headerAuth)) {
-			return splitToken(headerAuth[0]);
-		} else {
-			return splitToken(headerAuth);
-		}
-	} else {
-		return null;
+function getTokenFromHeader(req: Request) {
+	if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token' ||
+		req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+		return req.headers.authorization.split(' ')[1];
 	}
-}
 
-function splitToken(authString: string) {
-	if (authString.split(' ')[0] === 'Token') {
-		return authString.split(' ')[1];
-	} else {
-		return null;
-	}
+	return null;
 }
 
 const auth = {
-		required: jwt({
-			credentialsRequired: true,
-			secret: jwtSecret,
-			getToken: getTokenFromHeader,
-			userProperty: 'payload'}),
-
-		optional: jwt({
-			credentialsRequired: false,
-			secret: jwtSecret,
-			getToken: getTokenFromHeader,
-			userProperty: 'payload'})
+	required: jwt({
+		credentialsRequired: true,
+		secret: jwtSecret,
+		getToken: getTokenFromHeader,
+		userProperty: 'station'
+	}),
+	optional: jwt({
+		credentialsRequired: false,
+		secret: jwtSecret,
+		getToken: getTokenFromHeader,
+		userProperty: 'station'
+	})
 };
 
 export const authentication = auth;

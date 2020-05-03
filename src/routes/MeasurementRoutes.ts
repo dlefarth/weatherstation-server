@@ -9,8 +9,7 @@ const router = express.Router();
 interface NewMeasurement { temperature: number, humidity: number, timestamp: Date }
 
 router.get('/', (req, res) => {
-    Measurement
-        .find()
+    Measurement.find()
         .then(stations => res.json(stations));
 });
 
@@ -24,10 +23,12 @@ router.get('/:stationId', (req, res) => {
 
 router.post('/:stationId', authentication.required, (req: Request, res: Response) => {
     const stationId = req.params.stationId;
- 
-    Station.findOne({_id: stationId})
-        .then(station => req.body.map((dto: NewMeasurement) => ({...dto, station: station.id}))
-        .then((measurements: IMeasurement[]) => Measurement.insertMany(measurements));
+
+    Station.findOne({ _id: stationId })
+        .then(station => req.body.values.map((dto: NewMeasurement) => ({ ...dto, station: station._id })))
+        .then((measurements: IMeasurement[]) => Measurement.insertMany(measurements))
+        .then(_ => res.json())
+        .catch(_ => res.status(500).json())
 });
 
 export const MeasurementRoutes: Router = router;
