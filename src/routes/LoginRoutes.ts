@@ -14,7 +14,7 @@ router.post('', (req: Request, res: Response, next: NextFunction) => {
         return res.status(422).json({ errors: { password: 'cant be blank' } });
     }
 
-    passport.authenticate('local', { session: false }, (err, station: IStation, info) => {
+    passport.authenticate('basic', { session: false }, (err, station: IStation, info) => {
         if (err) { return next(err); }
 
         if (station) {

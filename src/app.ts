@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { MainRouter } from './routes';
 import './config/passport';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ mongoose.connect(mongoUrl);
 const app = express();
 
 app.use(bodyParser.json());
+
+app.use(passport.initialize());
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.log(err.stack);

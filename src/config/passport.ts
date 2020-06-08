@@ -1,17 +1,15 @@
 import passport from 'passport';
-import { Strategy } from 'passport-local';
 import Station from "../models/Station"
+import { BasicStrategy } from 'passport-http';
 
-passport.use(new Strategy({
-    usernameField: 'station[id]',
-    passwordField: 'station[password]'
-}, (id, password, done) => {
+passport.use(new BasicStrategy(
+    (id, password, done) => {
     Station.findOne({ _id: id }).then(station => {
         if (!station) {
-            return done(null, false, { message: 'id invalid' })
+            return done(null, false)
         }
         if (!station.validPassword(password)) {
-            return done(null, false, { message: 'password incorrect' });
+            return done(null, false);
         }
 
         return done(null, station);

@@ -1,12 +1,13 @@
 import express, { Router, Request, Response } from 'express';
 import Measurement, { IMeasurement } from '../models/Measurement';
 import { Mongoose } from 'mongoose';
-import Station from '../models/Station';
-import { authentication } from './auth';
+import Station, { IStation } from '../models/Station';
+import passport from 'passport';
+import auth from '../config/auth';
 
 const router = express.Router();
 
-interface NewMeasurement { temperature: number, humidity: number, timestamp: Date }
+interface NewMeasurement { temperature: number, pressure: number, timestamp: Date }
 
 router.get('/', (req, res) => {
     Measurement.find()
@@ -21,14 +22,13 @@ router.get('/:stationId', (req, res) => {
         .then(measurements => res.json(measurements))
 });
 
-router.post('/:stationId', authentication.required, (req: Request, res: Response) => {
-    const stationId = req.params.stationId;
+router.post('', auth, (req: Request, res: Response) => {
+    const {_id} = req.user as IStation;
 
-    Station.findOne({ _id: stationId })
-        .then(station => req.body.values.map((dto: NewMeasurement) => ({ ...dto, station: station._id })))
+    Station.findOne({ _id })
+        .then(station => req.body.map((dto: NewMeasurement) => ({ ...dto, station: station._id })))
         .then((measurements: IMeasurement[]) => Measurement.insertMany(measurements))
         .then(_ => res.json())
-        .catch(_ => res.status(500).json())
 });
 
 export const MeasurementRoutes: Router = router;
